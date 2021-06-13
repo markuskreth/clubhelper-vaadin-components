@@ -1,0 +1,1 @@
+clubhelper-vaadin-components
