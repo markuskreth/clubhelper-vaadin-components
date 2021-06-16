@@ -1,14 +1,19 @@
 package de.kreth.clubhelper.vaadincomponents.groupfilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.Cookie;
 
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
 
 import de.kreth.clubhelper.data.GroupDef;
 
@@ -23,15 +28,41 @@ public class GroupFilter extends HorizontalLayout {
     private Map<String, GroupDef> allGroups = new HashMap<>();
 
     public GroupFilter(List<GroupDef> allGroups) {
+	List<String> selected = getStoredIds();
 	for (GroupDef groupDef : allGroups) {
-	    Checkbox checkbox = new Checkbox(true);
+	    String id = "group_" + groupDef.getId();
+	    Checkbox checkbox = new Checkbox(selected == null || selected.contains(id));
 	    checkbox.setLabel(groupDef.getName());
-	    checkbox.setId("group_" + groupDef.getId());
+	    checkbox.setId(id);
 	    checkbox.addValueChangeListener(innerListener);
 	    add(checkbox);
 	    checkboxes.add(checkbox);
-	    this.allGroups.put(checkbox.getId().get(), groupDef);
+	    this.allGroups.put(id, groupDef);
 	}
+    }
+
+    private List<String> getStoredIds() {
+	Cookie[] cookies = VaadinRequest.getCurrent().getCookies();
+
+	List<String> selected = null;
+
+	for (Cookie cookie : cookies) {
+	    if (cookie.getName().equals(GroupFilter.class.getName())) {
+		selected = Arrays.asList(cookie.getValue().split("\\|"));
+		if (selected != null && selected.isEmpty()) {
+		    selected = null;
+		}
+		break;
+	    }
+	}
+	return selected;
+    }
+
+    private void storeIds(List<String> selectedIds) {
+	Cookie cookie = new Cookie(GroupFilter.class.getName(), String.join("|", selectedIds));
+	cookie.setMaxAge(Integer.MAX_VALUE);
+	cookie.setPath("/");
+	VaadinService.getCurrentResponse().addCookie(cookie);
     }
 
     public void addListener(GroupFilterListener listener) {
@@ -54,11 +85,14 @@ public class GroupFilter extends HorizontalLayout {
 
 	void fireEvent(GroupFilterListener... filterListeners) {
 	    List<GroupDef> selectedGroups = new ArrayList<>();
+	    List<String> selectedIds = new ArrayList<>();
 	    for (Checkbox checkbox : checkboxes) {
 		if (Boolean.TRUE.equals(checkbox.getValue())) {
+		    selectedIds.add(checkbox.getId().get());
 		    selectedGroups.add(allGroups.get(checkbox.getId().get()));
 		}
 	    }
+	    storeIds(selectedIds);
 	    GroupFilterEvent ev = new GroupFilterEvent(selectedGroups);
 	    for (GroupFilterListener groupFilterListener : filterListeners) {
 		groupFilterListener.groupFilterChange(ev);
