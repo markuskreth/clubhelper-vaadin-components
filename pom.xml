@@ -47,13 +47,24 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-testbench</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.kreth.clubhelper</groupId>
 			<artifactId>clubhelper-data</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
@@ -120,4 +131,9 @@
 		</profile>
 	</profiles>
 
+	<scm>
+		<url>scm:git:https://github.com/markuskreth/clubhelper-vaadin-components.git</url>
+		<developerConnection>scm:git:https://github.com/markuskreth/clubhelper-vaadin-components.git</developerConnection>
+		<connection>scm:git:https://github.com/markuskreth/clubhelper-vaadin-components.git</connection>
+	</scm>
 </project>
