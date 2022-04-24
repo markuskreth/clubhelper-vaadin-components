@@ -133,6 +133,5 @@
 		<url>scm:git:https://github.com/markuskreth/clubhelper-vaadin-components.git</url>
 		<developerConnection>scm:git:https://github.com/markuskreth/clubhelper-vaadin-components.git</developerConnection>
 		<connection>scm:git:https://github.com/markuskreth/clubhelper-vaadin-components.git</connection>
-	  <tag>clubhelper.parent-0.3.0</tag>
   </scm>
 </project>

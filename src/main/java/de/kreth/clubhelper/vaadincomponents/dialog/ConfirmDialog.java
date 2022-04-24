@@ -2,11 +2,13 @@ package de.kreth.clubhelper.vaadincomponents.dialog;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 public class ConfirmDialog {
 
@@ -41,6 +43,7 @@ public class ConfirmDialog {
     public ConfirmDialog withConfirmButton(String confirmText,
 	    ComponentEventListener<ClickEvent<Button>> clickListener) {
 	confirm = new Button(confirmText, new CloseDialogAndDelegate(dlg, clickListener));
+	confirm.addClickShortcut(Key.ENTER);
 	return this;
     }
 
@@ -58,23 +61,28 @@ public class ConfirmDialog {
 	    throw new IllegalStateException("At least one Button must be set for a " + getClass().getSimpleName());
 	}
 
+	FormLayout content = new FormLayout();
 	if (title != null) {
-	    dlg.add(new H1(title));
+	    content.add(new H1(title));
 	}
 
-	dlg.add(new Text(message));
+	content.add(new Text(message));
 
-	HorizontalLayout buttonLayout = new HorizontalLayout();
+	FormLayout buttonLayout = new FormLayout();
+	if (confirm != null) {
+	    buttonLayout.add(confirm);
+	}
 	if (reject != null) {
 	    buttonLayout.add(reject);
 	}
 	if (cancel != null) {
 	    buttonLayout.add(cancel);
 	}
-	if (confirm != null) {
-	    buttonLayout.add(confirm);
+	if (confirm != null && buttonLayout.getChildren().count() > 1) {
+	    confirm.getElement().setAttribute("theme", Lumo.DARK);
 	}
-	dlg.add(buttonLayout);
+	content.add(buttonLayout);
+	dlg.add(content);
 	dlg.open();
     }
 
